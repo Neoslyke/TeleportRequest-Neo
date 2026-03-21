@@ -7,8 +7,6 @@
   <ImplicitUsings>enable</ImplicitUsings>
   <Nullable>enable</Nullable>
 
-  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-
   <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 </PropertyGroup>
