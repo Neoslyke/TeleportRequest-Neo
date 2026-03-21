@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Timers;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
+using Timer = System.Timers.Timer;
+using ElapsedEventArgs = System.Timers.ElapsedEventArgs;
 
 namespace TeleportRequest
 {
-	[ApiVersion(1, 16)]
+	[ApiVersion(2, 1)]
 	public class TeleportRequest : TerrariaPlugin
 	{
 		public override string Author
@@ -26,12 +27,12 @@ namespace TeleportRequest
 		{
 			get { return "Teleport"; }
 		}
-		private Timer Timer;
+		private Timer? Timer;
 		private bool[] TPAllows = new bool[256];
 		private TPRequest[] TPRequests = new TPRequest[256];
 		public override Version Version
 		{
-			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0, 0); }
 		}
 
 		public TeleportRequest(Main game)
@@ -47,7 +48,7 @@ namespace TeleportRequest
 			{
 				ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
 				ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
-				Timer.Dispose();
+				Timer?.Dispose();
 			}
 		}
 		public override void Initialize()
@@ -56,15 +57,21 @@ namespace TeleportRequest
 			ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
 		}
 
-		void OnElapsed(object sender, ElapsedEventArgs e)
+		void OnElapsed(object? sender, ElapsedEventArgs e)
 		{
 			for (int i = 0; i < TPRequests.Length; i++)
 			{
 				TPRequest tpr = TPRequests[i];
 				if (tpr.timeout > 0)
 				{
-					TSPlayer dst = TShock.Players[tpr.dst];
-					TSPlayer src = TShock.Players[i];
+					TSPlayer? dst = TShock.Players[tpr.dst];
+					TSPlayer? src = TShock.Players[i];
+
+					if (dst == null || src == null)
+					{
+						tpr.timeout = 0;
+						continue;
+					}
 
 					tpr.timeout--;
 					if (tpr.timeout == 0)
@@ -132,7 +139,7 @@ namespace TeleportRequest
 			}
 
 			string plrName = String.Join(" ", e.Parameters.ToArray());
-			var players = TShock.Utils.FindPlayer(plrName);
+			var players = TSPlayer.FindByNameOrID(plrName);
 			if (players.Count == 0)
 				e.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -163,9 +170,9 @@ namespace TeleportRequest
 				TPRequest tpr = TPRequests[i];
 				if (tpr.timeout > 0 && tpr.dst == e.Player.Index)
 				{
-					TSPlayer plr1 = tpr.dir ? e.Player : TShock.Players[i];
-					TSPlayer plr2 = tpr.dir ? TShock.Players[i] : e.Player;
-					if (plr1.Teleport(plr2.X, plr2.Y))
+					TSPlayer? plr1 = tpr.dir ? e.Player : TShock.Players[i];
+					TSPlayer? plr2 = tpr.dir ? TShock.Players[i] : e.Player;
+					if (plr1 != null && plr2 != null && plr1.Teleport(plr2.X, plr2.Y))
 					{
 						plr1.SendSuccessMessage("Teleported to {0}.", plr2.Name);
 						plr2.SendSuccessMessage("{0} teleported to you.", plr1.Name);
@@ -185,7 +192,7 @@ namespace TeleportRequest
 			}
 
 			string plrName = String.Join(" ", e.Parameters.ToArray());
-			var players = TShock.Utils.FindPlayer(plrName);
+			var players = TSPlayer.FindByNameOrID(plrName);
 			if (players.Count == 0)
 				e.Player.SendErrorMessage("Invalid player!");
 			else if (players.Count > 1)
@@ -221,8 +228,13 @@ namespace TeleportRequest
 				TPRequest tpr = TPRequests[i];
 				if (tpr.timeout > 0 && tpr.dst == e.Player.Index)
 				{
-					e.Player.SendSuccessMessage("Denied {0}'s teleport request.", TShock.Players[i].Name);
-					TShock.Players[i].SendErrorMessage("{0} denied your teleport request.", e.Player.Name);
+					TSPlayer? player = TShock.Players[i];
+					if (player != null)
+					{
+						e.Player.SendSuccessMessage("Denied {0}'s teleport request.", player.Name);
+						player.SendErrorMessage("{0} denied your teleport request.", e.Player.Name);
+					}
+					tpr.timeout = 0;
 					return;
 				}
 			}
