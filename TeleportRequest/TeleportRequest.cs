@@ -21,7 +21,7 @@ public class TeleportRequest : TerrariaPlugin
 
     public static Config Config { get; set; } = null!;
 
-    internal static string ConfigPath => Path.Combine(TShock.SavePath, "tpconfig.json");
+    internal static string ConfigPath => Path.Combine(TShock.SavePath, "TeleportRequest.json");
 
     public override string Description => "Adds teleportation accept commands.";
 
@@ -265,24 +265,38 @@ public class TeleportRequest : TerrariaPlugin
 
     private void TPAutoAccept(CommandArgs e)
     {
-        if (this.TPAutoDenies[e.Player.Index])
+        if (this.TPAutoAccepts[e.Player.Index])
         {
-            e.Player.SendErrorMessage("Please disable auto-deny first.");
+            e.Player.SendErrorMessage("You already have auto-accept enabled. Use /tpautodeny to switch.");
             return;
         }
-        this.TPAutoAccepts[e.Player.Index] = !this.TPAutoAccepts[e.Player.Index];
-        e.Player.SendInfoMessage("{0}abled automatic TP acceptance.", this.TPAutoAccepts[e.Player.Index] ? "En" : "Dis");
+        if (this.TPAutoDenies[e.Player.Index])
+        {
+            this.TPAutoDenies[e.Player.Index] = false;
+            this.TPAutoAccepts[e.Player.Index] = true;
+            e.Player.SendInfoMessage("Switched from auto-deny to auto-accept.");
+            return;
+        }
+        this.TPAutoAccepts[e.Player.Index] = true;
+        e.Player.SendInfoMessage("Enabled automatic TP acceptance.");
     }
 
     private void TPAutoDeny(CommandArgs e)
     {
-        if (this.TPAutoAccepts[e.Player.Index])
+        if (this.TPAutoDenies[e.Player.Index])
         {
-            e.Player.SendErrorMessage("Please disable auto-accept first.");
+            e.Player.SendErrorMessage("You already have auto-deny enabled. Use /tpautoaccept to switch.");
             return;
         }
-        this.TPAutoDenies[e.Player.Index] = !this.TPAutoDenies[e.Player.Index];
-        e.Player.SendInfoMessage("{0}abled automatic TP denial.", this.TPAutoDenies[e.Player.Index] ? "En" : "Dis");
+        if (this.TPAutoAccepts[e.Player.Index])
+        {
+            this.TPAutoAccepts[e.Player.Index] = false;
+            this.TPAutoDenies[e.Player.Index] = true;
+            e.Player.SendInfoMessage("Switched from auto-accept to auto-deny.");
+            return;
+        }
+        this.TPAutoDenies[e.Player.Index] = true;
+        e.Player.SendInfoMessage("Enabled automatic TP denial.");
     }
 
     private void TPDeny(CommandArgs e)
