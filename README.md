@@ -1,5 +1,5 @@
-# Back
-A TShock plugin that teleports you back to your last death position.
+# TeleportRequest
+A TShock plugin for teleporting to other player.
 
 ## How to Install
 1. Download the `.dll` file.
