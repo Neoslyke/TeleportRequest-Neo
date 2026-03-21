@@ -17,7 +17,7 @@ public class TeleportRequest : TerrariaPlugin
 
     private readonly TPRequest[] TPRequests = new TPRequest[256];
 
-    public override string Author => "MarioE";
+    public override string Author => "Neoslyke (fork of MarioE)";
 
     public static Config Config { get; set; } = null!;
 
