@@ -40,7 +40,7 @@ namespace TeleportRequest
 		{
 			using (var sr = new StreamReader(stream))
 			{
-				return JsonConvert.DeserializeObject<Config>(sr.ReadToEnd()) ?? new Config();
+				return JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
 			}
 		}
 	}
