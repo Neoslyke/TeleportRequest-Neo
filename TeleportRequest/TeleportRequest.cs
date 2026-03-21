@@ -19,7 +19,7 @@ public class TeleportRequest : TerrariaPlugin
 
     public override string Name => "TeleportRequest";
 
-    public override string Author => "Neoslyke, MarioE)";
+    public override string Author => "Neoslyke, MarioE";
 
     public override Version Version => new Version(2, 1, 0);
 
