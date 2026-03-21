@@ -17,16 +17,17 @@ public class TeleportRequest : TerrariaPlugin
 
     private readonly TPRequest[] TPRequests = new TPRequest[256];
 
-    public override string Author => "Neoslyke (fork of MarioE)";
+    public override string Name => "TeleportRequest";
+
+    public override string Author => "Neoslyke, MarioE)";
+
+    public override Version Version => new Version(2, 1, 0);
+
+    public override string Description => "Adds teleportation accept commands.";
 
     public static Config Config { get; set; } = null!;
 
     internal static string ConfigPath => Path.Combine(TShock.SavePath, "TeleportRequest.json");
-
-    public override string Description => "Adds teleportation accept commands.";
-
-    public override string Name => "TeleportRequest";
-    public override Version Version => new Version(1, 0, 5);
 
     public TeleportRequest(Main game)
         : base(game)
