@@ -2,7 +2,7 @@
 
 namespace TeleportRequest;
 
-public class Config
+public class Configuration
 {
     public int Interval = 3;
     public int Timeout = 3;
