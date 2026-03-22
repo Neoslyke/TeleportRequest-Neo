@@ -20,19 +20,19 @@ public class Configuration
         streamWriter.Write(value);
     }
 
-    public static Config Read(string path)
+    public static Configuration Read(string path)
     {
         if (!File.Exists(path))
         {
-            return new Config();
+            return new Configuration();
         }
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         return Read(stream);
     }
 
-    public static Config Read(Stream stream)
+    public static Configuration Read(Stream stream)
     {
         using var streamReader = new StreamReader(stream);
-        return JsonConvert.DeserializeObject<Config>(streamReader.ReadToEnd()) ?? new Config();
+        return JsonConvert.DeserializeObject<Configuration>(streamReader.ReadToEnd()) ?? new Configuration();
     }
 }

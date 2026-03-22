@@ -25,14 +25,14 @@ public class TeleportRequest : TerrariaPlugin
 
     public override string Description => "Adds teleportation accept commands.";
 
-    public static Config Config { get; set; } = null!;
+    public static Configuration Config { get; set; } = null!;
 
     internal static string ConfigPath => Path.Combine(TShock.SavePath, "TeleportRequest.json");
 
     public TeleportRequest(Main game)
         : base(game)
     {
-        Config = new Config();
+        Config = new Configuration();
         for (var i = 0; i < this.TPRequests.Length; i++)
         {
             this.TPRequests[i] = new TPRequest();
@@ -326,7 +326,7 @@ public class TeleportRequest : TerrariaPlugin
         {
             if (File.Exists(ConfigPath))
             {
-                Config = Config.Read(ConfigPath);
+                Config = Configuration.Read(ConfigPath);
             }
             Config.Write(ConfigPath);
         }
